@@ -123,13 +123,13 @@ The staff at the time of answering:
 
 Once on site, the personnel sent proceeds to assess the injured person and, after the stabilization and first aid maneuvers, contact the communications center to transmit the patient's data, the situation encountered and to obtain information regarding the hospital to which possibly go.
 
-\subsubsection{Work Context Diagram}
-The context diagram showed in figure \ref{fig:context} outlines how external entities interact with the software system.
+\subsubsection{External Entities}
+The diagram showed in figure \ref{fig:context} outlines how external entities interact with the software system.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{images/context.jpg}
-    \caption{Context Diagram showing External and Internal Entities}
+    \caption{Component Diagram showing External and Internal Entities}
     \label{fig:context}
 \end{figure}
 
@@ -208,182 +208,152 @@ Although this is a critical business concept, it is not core to the system and i
 
 And finally, the AED Database Management supports the system in performing its main functions.
 
-\subsubsection{Emergency Progress Management}
+\subsubsection{Use Case Analysis}
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.6, width=\textwidth]{images/uml-emergency.png}
-    \caption{Emergency Progress Management Use Case Diagram}
+    \includegraphics[scale=0.7, width=\textwidth]{images/use-case.png}
+    \caption{Use cases Diagram}
     \label{fig:uml-emergency}
 \end{figure}
 
-As we can see in figure \ref{fig:uml-emergency}, the emergency progress management involves three different entities: the user (first responder), the emergency communications center (ECC), and the mapping platform.
+In this section, we will analyze more in details each use case identified in the HeartBeat system, identifying all the key steps performed.
+
+As we can see in figure \ref{fig:uml-emergency}, three actors are involved in the system functioning: 
 %
-Now we will analyze more in details each use case identified in this subdomain: \\
-
-\textbf{1. ECC triggers the emergency management system:} \\
-
-As we saw earlier, the emergency management system is triggered by the assignment of the 'code blue' to an emergency, which is set by the ECC.
-
-While handling the emergency call, the operator will fill in a form with all the relevant data of the emergency.
+The Emergency Communication System, First Responders and users.
 %
-The HeartBeat system, once the emergency has been classified as 'code blue', will receive the following data:
+Each actor performs specific actions based on the specific use case that takes place.
+
+\subsubsection*{Emergency Signalling}
+
+\begin{itemize}
+    \item Primary actor: Emergency Communication Center
+    \item Scope: Send the emergency alert to First Responders
+    \item Scenario: Somebody calls the 118 for a medical emergency regarding a cardiac arrest
+\end{itemize}
+
+It all starts when the '118' emergency number is called for a victim of cardio-respiratory arrest.
+%
+As soon as the operator has verified that the emergency regards a cardio-respiratory arrest, he/she assigns the \textit{code blue} to it.
+%
+The assignment of the \textit{code blue} to an emergency triggers the \textbf{emergency management system}, which receives the data about the emergency and starts searching for suitable First Responders.
+
+ First responders are selected according to two variables:
+
+ \begin{enumerate}
+     \item If the geo-location on the mobile phone is active, First Responder located within 1 km from the emergency site, will be notified.
+     \item If the geo-location on the mobile phone if switched off, First Responders will be notified according to the municipality selected during the registration.
+ \end{enumerate}
+
+This use case terminates when suitable First Responders receive the \textbf{emergency alert}.
+
+\subsubsection*{View Current AED}
+
+\begin{itemize}
+    \item Primary actor: Emergency Communication Center and Users / First Responders
+    \item Scope: Visualize AEDs on the map and display information
+    \item Scenario: Users want to see AEDs located near them in a specific moment
+\end{itemize}
+
+When a user wants to see AEDs displayed on the map, the system will detect the device location,and will display AEDs located in the area of 1 km from the user.
+
+The distance of 1km is set as default but users can zoom in/out the map to limit/extend the research.
+%
+In the case in which the users' location is not available, the system will display AEDs according to the municipality selected at the time registration.
+
+Each AED stored in the database has a profile containing all the relevant information, including the address, the reference point and available hours.
+%
+Once the user selects a specific defibrillator, the system will display these data.
+
+\subsubsection*{Update AED}
+
+\begin{itemize}
+    \item Primary actor: Emergency Communication Center and Users / First Responders
+    \item Scope: New AED is inserted in the system
+    \item Scenario: A new AED is inserted in the system by the Emergency Communication System or a user
+\end{itemize}
+
+When a user or the Emergency Communication System wants to register a new AED, he/she will need to fill out the registration form with the following data:
+
+\begin{itemize}
+    \item Name of the place (reference point)
+    \item Address
+    \item Location (coordinates)
+    \item Additional information about the location [optional]
+    \item Availability (month - days - hours)
+    \item Picture [optional]
+\end{itemize}
+
+Then, once the form has been submitted, the system confirms the registration of the new AED and updates the ECC database with the new information.
+
+\textit{Extension}: Registration may fail due to invalid or missing data. If this happens, the user will have to re-enter the data and wait for confirmation.
+
+\subsubsection*{Emergency Management}
+
+\begin{itemize}
+    \item Primary actor: First Responders
+    \item Scope: Accept / decline the emergency alert
+    \item Scenario: A First Responders receives an emergency alert and either accepts or declines it
+\end{itemize}
+
+When a first responder receives a help request, he/she clicks on the notification, which will automatically open the application and turn the geo-location on.
+
+The First Responder can accept, decline or ignore the alert.
+%
+Once the First Responders has accepted the request, the system will send a confirmation to the Emergency Communications Center, which will see the responder's movements in real-time.
+
+At the same time, the system will display the emergency details to the first responders who accepted the request, which are respectively:
 
 \begin{itemize}
     \item Time of alert
     \item Reference point
     \item Address
-    \item Ambulance Estimated Time of Arrival
+    \item Ambulance ETA
 \end{itemize}
 
-Then, the system will identify suitable first responders according to either their active location or, if not available, through the municipality selected at time of registration.
+\subsubsection*{Registration}
 
-Finally, the system will send an alert notification to the selected first responders, which is the next use case analyzed. \\
-
-\textbf{2. First Responder receives the help request:} \\
-
-When a first responder receives the help request (showed in figure \ref{fig:alert}), he/she will click on the notification, which will open the application and automatically turn the location on.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.25]{images/alert-notification.png}
-    \caption{Alert Notification Design}
-    \label{fig:alert}
-\end{figure}
-
-The location is fundamental because, before accepting, the first responder needs to be aware of the distance from the emergency.
-
-After that, the user will either accept or decline the request, leading to the next use case. \\
-
-\textbf{3. First Responder accepts the request:} \\
-
-Once the first responder has accepted the request, the system will send a confirmation to the Emergency Communications Center, which will see the responder's movements in real time.
-
-At the same time, the system will display the emergency details and the first responder will see the data that we mentioned before (time of alert, reference point, address and ambulance ETA). \\
-
-\textbf{4. AEDs near me:} \\
-
-In this use case, the system checks for available AEDs in the area through the AED database that is integrated with the ECC cartographic system.
-
-Once the available AEDs have been identified, keeping in mind that their availability depends on whether the building in which they are located is open or closed, the system will display them on the map. \\
-
-\textbf{5. Fastest path on the map:} \\
-
-When the user clicks on the 'guide me' button, the system will open the mapping platform and insert the emergency location in the map.
-
-In the case in which a device has more than one mapping platform installed, the system will first ask the user to choose the preferred one.
-%
-The mapping platform will be responsible for calculating and showing the fastest path on the map.
-
-\subsubsection{User Account Management}
-
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.7]{images/uml-user.png}
-    \caption{User Account Management Use Case Diagram}
-    \label{fig:uml-user}
-\end{figure}
-
-As we can see in figure \ref{fig:uml-user}, the user account management subdomain regards all the activities concerning the user (first responder). 
-%
-Now we will analyze more in details each use case identified in this subdomain: \\
-
-\textbf{1. User account registration:} \\
+\begin{itemize}
+    \item Primary actor: First Responders
+    \item Scope: New users join the application
+    \item Scenario: A user that has obtained a BLSD certificate wants to subscribe to the application creating their profile
+\end{itemize}
 
 After having downloaded the application, users will fill a registration form with the following data:
 
 \begin{itemize}
-    \item Name
-    \item Surname
-    \item Email (\textit{to be confirmed})
-    \item Telephone
-    \item Province
-    \item Municipality (if the geo-localization is not active, the emergency alert will be sent according to the municipality selected)
+    \item Name and Surname
+    \item Email [to be confirmed]
+    \item Municipality (if the geo-localization is not active, the emergency alert will be sent according to the municipality selected) 
     \item BLSD certificate (emission body)
-    \item Date of emission
-    \item Period of validity
-    \item Tax Code
-    \item Picture (\textit{optional})
+    \begin{itemize}
+        \item Date of emission
+        \item Period of validity
+    \end{itemize}
+    \item Tax code
+    \item Picture [optional]
 \end{itemize}
 
-At time of registration, users will also have to authorize the access to location (when using the app) as well as confirm the terms and conditions of the application.
-
-Then, the user will submit the form and wait for confirmation to be sent by the system.
+At the time of registration, users will also have to authorize the access to location (when using the app), as well as confirm the terms and conditions of the application.
 %
-Registration may fail due invalid or missing data.
-%
-If that happens, the user will have to re-enter the data and wait for confirmation. \\
+Once users have submitted the form, they will wait for confirmation to be sent by the system.
 
-\textbf{2. User account visualization:} \\
+\textit{Extension}: Registration may fail due to invalid or missing data. If this happens, the user will have to re-enter the data and wait for confirmation.
 
-The user will not have to insert the credential every time he/she opens the application as the log in is automatic.
-
-When the user enters the application, the system will show accounts info.
-%
-The user is free to log out when he/she wants. \\
-
-\textbf{3. BLSD certificate expiry:} \\
-
-We have seen before that at time of registration, users insert data about their BLSD certificate, including the emission date and the period of validity
-
-With these data, the system will automatically calculate the date of expiry and, one month before, it will notify the user to update the certificate.
-
-Users can update their profile at any time, following the procedure that we will see in the next use case. \\
-
-\textbf{4. User account update:} \\
-
-This use case starts with the user log in (automatically done when the app is opened).
-
-Then, through the designated section, users will update the account info that will be checked and recorded by the system.
-
-If the data updated are valid, the system will send a confirmation message to the user stating that the account modification was successful.
-
-\subsubsection{AED Database Management}
-
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.7, width=\textwidth]{images/uml-aed.png}
-    \caption{AED Database Management Use Case Diagram}
-    \label{fig:uml-aed}
-\end{figure}
-
-As showed in figure \ref{fig:uml-aed}, the AED database management subdomain regards all the operations concerning publicly available defibrillators and involves the emergency communications center.
-%
-Now we will analyze more in details each use case identified in this subdomain: \\
-
-\textbf{1. AED registration:} \\
-
-When a user wants to register a new AED in the system, he/she will need to fill the registration form with the following data:
+\subsubsection*{Update Certificate}
 
 \begin{itemize}
-    \item Name of the place
-    \item Address
-    \item Additional info about the exact location (\textit{optional})
-    \item Availability (month - days - hours)
-    \item Picture (\textit{optional})
+    \item Primary actor: First Responders
+    \item Scope: Update an expired certificate in order to be able to intervene in case of emergency
+    \item Scenario: The BLSD certificate will expire within a one-month period
 \end{itemize}
 
-Then, the user will submit the form and wait for confirmation to be sent by the system.
+The system will automatically calculate the date of expiry and, one month before, it will notify the user to update the certificate.
 %
-Once data have been confirmed, the system will send them to the emergency communications system, which will update the database.
+Users can update their certificate at any time by updating their profile.
 
-Registration may fail due invalid or missing data.
-%
-If that happens, the user will have to re-enter the data and wait for confirmation. \\
-
-\textbf{2. AED map display:} \\
-
-When a user wants to see the AEDs displayed on the map, the system will detect the device location, and it will display AEDs located in the area of 1 km.
-%
-We set the distance of 1 km as default, but the user can zoom in/out the map to limit/extend the research.
-
-In the case in which the user's location is not available, the system will display AEDs according to the municipality selected at the time of registration. \\
-
-\textbf{3. AED info display:} \\
-
-Like for users, each AED present in the database has a profile containing all the relevant information.
-
-To access these data, the user needs to selected a specific defibrillator and the system will show its profile.
+\textit{Extension}: Updating may fail due to invalid or missing data. If this happens, the user will have to re-enter the data and wait for confirmation.
 
 \section{Software Requirements}
 In this section we will describe the features and functionalities that users expect from the software.
@@ -574,9 +544,7 @@ Moving to AED locations, app.get('/locations') simply returns the list of the AE
 
 Here below we can see the output of the locations get request, which is characterized by a JSON file specifying data for each registered AED.
 
-The last http method displayed simulates the behaviour of the system in the moment in which, given a location, the account micro-service identifies the users that are located in the area.
-
-\newpage
+The last http method displayed simulates the behaviour of the system in the moment in which, given a location, the account micro-service identifies the users that are located in the area. \\
 
 \begin{lstlisting}[language=JSON]
 [
